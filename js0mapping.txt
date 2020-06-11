@@ -1,0 +1,37 @@
+0 - A
+1 - B
+3 - X
+4 - Y
+
+6 - L1
+7 - R1
+8 - L2
+9 - R2
+10 - Select
+11 - Start
+
+
+14 - Rstick
+
+
+Axis
+LStick:
+0
+    -1 - L
+     1 - R
+1   -1 - U
+     1 - D
+RStick:
+2
+    -1 - L
+     1 - R
+3   -1 - U
+     1 - D
+
+
+Hat
+(0,1) - Up
+(1,0) - Right
+(0, -1) - Down
+(-1,0) - Left
+
