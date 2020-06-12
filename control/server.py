@@ -2,10 +2,6 @@ from flask import Flask, request, jsonify, render_template
 from flask_socketio import SocketIO, emit
 from flask_classful import FlaskView, route
 
-""" TODO - Create an index page that serves a JavaScript client that
-    connects over WebSockets, and the client uses a gamepad API like
-    https://github.com/beejjorgensen/jsgamepad to emit the events. And
-    maybe even try to bundle the MJPEG streamer with it! """
 class Server(Flask):
     _config = None
     state = None
