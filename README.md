@@ -44,13 +44,14 @@ I will add the option to create an external configuration file soon...
 To install this as systemd service, perform the following:
 
 ```bash
+sudo su
 echo "" > /lib/systemd/system/robot-remote.service
 echo "[Unit]" >> /lib/systemd/system/robot-remote.service
 echo "Description=Robot Remote" >> /lib/systemd/system/robot-remote.service
 echo "After=network-online.target" >> /lib/systemd/system/robot-remote.service
 echo ""  >> /lib/systemd/system/robot-remote.service
 echo "[Service]" >> /lib/systemd/system/robot-remote.service
-echo "ExecStart=/usr/bin/python3 /opt/robot-remote/robot-server.sh" >> /lib/systemd/system/robot-remote.service
+echo "ExecStart=/usr/bin/python3 /opt/robot-remote/main.py" >> /lib/systemd/system/robot-remote.service
 echo "WorkingDirectory=/opt/robot-remote/" >> /lib/systemd/system/robot-remote.service
 echo "StandardOutput=inherit" >> /lib/systemd/system/robot-remote.service
 echo "StandardError=inherit" >> /lib/systemd/system/robot-remote.service
