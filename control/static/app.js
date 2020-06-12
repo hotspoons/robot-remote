@@ -17,12 +17,16 @@ robotClient = (function () {
     // Lock to prevent multiple connection attempts
     var connecting = false;
     
-    // our WebSockets abstraction
+    // our WebSockets abstraction using socket.io
     var socket = io();
     
     socket.on('connect', function() {
         socket.emit('connected', {data: 'I\'m connected!'});
     });
+    
+    socket.on('state received', function(message){
+        console.log(message);
+        });
     
     // Input map to axis on robot. Todo make configurable?
     function getInputMap(){
@@ -66,7 +70,7 @@ robotClient = (function () {
             socket.emit('state', {data: this.getState()});
         }
         else{
-            //console.log("should try to connect");
+            console.log("should try to connect");
             this.connect();
         }
     }

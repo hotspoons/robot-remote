@@ -15,7 +15,7 @@ class Server(Flask):
         super().__init__(__name__)
         self._config = config
         self.config['EXPLAIN_TEMPLATE_LOADING'] = True
-        self.config['SECRET_KEY'] = 'secret!'
+        self.config['SECRET_KEY'] = 'shhhhhh this is a secret'
         self.state = self._config.get_base_state()
         self.add_url_rule("/", "index", self.get_index)
         self.add_url_rule("/state", "state", self.put_state, methods=["PUT"])
@@ -34,10 +34,13 @@ class Server(Flask):
     
     """ Controller that accepts a "State" structure"""
     def put_state(self, json=None):
+        emit_event = False
+        print(json)
         if json == None:
             new_state = request.get_json()
         else:
-            new_state = json
+            new_state = json['data']
+            emit_event = True
         state = self._config.get_base_state()
         for main_key in new_state:
             if main_key in state.keys():
@@ -45,6 +48,10 @@ class Server(Flask):
                     if key in state[main_key].keys():
                         state[main_key][key] = new_state[main_key][key]
         self.state = state
+        
+        if emit_event == True:
+            emit('state received', {'data': state})
+        
         return jsonify(state)
 
 
