@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from flask_classful import FlaskView, route
 
 """ TODO - Create an index page that serves a JavaScript client that
@@ -15,17 +15,22 @@ class Server(Flask):
         super().__init__(__name__)
         self._config = config
         self.config['EXPLAIN_TEMPLATE_LOADING'] = True
+        self.config['SECRET_KEY'] = 'secret!'
         self.state = self._config.get_base_state()
         self.add_url_rule("/", "index", self.get_index)
         self.add_url_rule("/state", "state", self.put_state, methods=["PUT"])
-        self.socketio = SocketIO(self)
+        self.socketio = SocketIO(self, cors_allowed_origins='*')
         self.socketio.on_event("state", self.put_state)
+        self.socketio.on_event("connect", self.connect)
 
     def start(self):
-        self.run(host=self._config.address, port=self._config.port)
+        self.socketio.run(self, host=self._config.address, port=self._config.port)
 
     def get_index(self):
         return render_template('index.html')
+        
+    def connect(self):
+        emit('connected', {'data': True})
     
     """ Controller that accepts a "State" structure"""
     def put_state(self, json=None):
