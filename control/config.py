@@ -46,10 +46,23 @@ class State():
 #TODO Make this read from a configuration file
 class Config:
     
+    """ If you have an MJPEG streamer running on your robot, e.g. 
+        https://github.com/Freenove/Freenove_Three-wheeled_Smart_Car_Kit_for_Raspberry_Pi/tree/master/mjpg-streamer,
+        embed the stream into the client"""
+    
+    mjpeg_url = "http://{hostname}:8090/?action=stream"
+    
+    """ For future use, I may try my hand at more modern video streaming,
+        and possibly embed it into this application if I can find a 
+        hardware-accelerated h264 encoder that works with Python. """
+    
+    h264_url = None
+    
     """ If you have multiple controllers configured, this is the index
         of the one you wish to use for client or local usage"""
         
     controller_index = 0
+    
     """ The mode in which is runs. LOCAL reads directly from a configured
         controller and sends events directly to the robot. CLIENT reads
         events from the configured controller and sends it to the server.
@@ -62,6 +75,7 @@ class Config:
         mode, or the host name or IP address of the server"""
         
     address = "0.0.0.0"
+    
     """ The port you wish to run the REST/WS server on, or connect to a
         server on, depending on client/server mode"""
         
@@ -70,6 +84,7 @@ class Config:
     """ How often, in millseconds, you wish the application to poll for
         a change in state, either from a controller or from REST/WS
         """
+        
     sampling_frequency = 0.06
     
     """ This dictionary needs to be configured for your input controller
@@ -94,5 +109,6 @@ class Config:
         3:Actions.B_TOGGLE,
         4:Actions.BEEP,
     }
+    
     def get_base_state(self):
         return copy.deepcopy(State().default_state)

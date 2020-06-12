@@ -19,6 +19,7 @@ class Server(Flask):
         self.state = self._config.get_base_state()
         self.add_url_rule("/", "index", self.get_index)
         self.add_url_rule("/state", "state", self.put_state, methods=["PUT"])
+        self.add_url_rule("/stream", "stream", self.get_stream_url, methods=["GET"])
         self.socketio = SocketIO(self, cors_allowed_origins='*')
         self.socketio.on_event("state", self.put_state)
         self.socketio.on_event("connect", self.connect)
@@ -29,13 +30,15 @@ class Server(Flask):
     def get_index(self):
         return render_template('index.html')
         
+    def get_stream_url(self):
+        return jsonify({"mjpeg_url": self._config.mjpeg_url, "h264_url": self._config.h264_url})
+        
     def connect(self):
         emit('connected', {'data': True})
     
     """ Controller that accepts a "State" structure"""
     def put_state(self, json=None):
         emit_event = False
-        print(json)
         if json == None:
             new_state = request.get_json()
         else:

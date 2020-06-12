@@ -17,16 +17,21 @@ robotClient = (function () {
     // Lock to prevent multiple connection attempts
     var connecting = false;
     
+    var streamConfig = {
+        mjpeg_url: null,
+        h264_url: null
+    };
+    
     // our WebSockets abstraction using socket.io
     var socket = io();
     
     socket.on('connect', function() {
-        socket.emit('connected', {data: 'I\'m connected!'});
+        socket.emit('connected', {data: 'We have connected!'});
     });
     
     socket.on('state received', function(message){
-        console.log(message);
-        });
+        //console.log(message);
+    });
     
     // Input map to axis on robot. Todo make configurable?
     function getInputMap(){
@@ -47,12 +52,33 @@ robotClient = (function () {
         }
     }
     
+    function fetchStream(){
+        fetch('/stream')
+                .then(response => response.json())
+                .then(data => embedStream(data));
+    }
+    
+    function embedStream(data){
+        streamConfig = data;
+        let qs = htmlLib.qs;
+        if(streamConfig.h264_url !== null){
+            console.log("not implemented");
+        }
+        else if(streamConfig.mjpeg_url !== null){
+            qs("#stream").classList.remove("nodisp");
+            qs("#stream").innerHTML = '<img src="' + streamConfig.mjpeg_url.replace("{hostname}", location.hostname) + '" style="width:100%" />';
+        }
+    }
+    
 	function connect() {
         if(connecting === false && connected === false){
             connecting = true;
-            io.connect();
+            
+            // Get video stream information and embed if possible
+            fetchStream();
+            io.connect(null, {port: location.port, rememberTransport: false});
             socket.on('connected', function(msg){
-               console.log('After connect', msg);
+               console.log('We have connected...', msg);
             });
             window.setTimeout(function(){
                 connected = true;
@@ -76,7 +102,7 @@ robotClient = (function () {
     }
     
     function getState(){
-        let qs = htmlLib.qs;
+        
         let state = {
             vectors:{
                 FORWARD: 0.00,
