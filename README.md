@@ -116,3 +116,4 @@ sudo systemctl start robot-server.service
  - Possibly integrated h264 streaming if I can figure out hardware acceleration
  - Configurable input on the web client
  - Finish writing python client 
+ - Better packaging of application (this was my first time writing more than a couple of lines of Python in 10 years, so I am a little rusty and behind the times)
