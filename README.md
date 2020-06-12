@@ -37,7 +37,14 @@ git clone https://github.com/hotspoons/robot-remote.git robot-remote
 ## Configuration
 
 Currently, configuration is set by modifying values in control/config.py.
-I will add the option to create an external configuration file soon...
+I will add the option to create an external configuration file soon.
+
+If you only want to hook up a gamepad (hopefully wireless) to your robot
+and drive it around, change the value of Config.mode from "Mode.SERVER"
+to "Mode.LOCAL". 
+
+You may need to update AXIS_MAP and ACTIONS_MAP to correspond to the correct
+axes and actions on your controller.
 
 ## Installing as a startup service
 
@@ -103,3 +110,9 @@ sudo systemctl enable robot-server.service
 sudo systemctl start robot-server.service
 
 ```
+
+## TODOs
+ - Externalize configuration
+ - Possibly integrated h264 streaming if I can figure out hardware acceleration
+ - Configurable input on the web client
+ - Finish writing python client 
