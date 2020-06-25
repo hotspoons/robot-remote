@@ -16,8 +16,8 @@ there is nothing preventing it from running on other OSes or hardware. The
 following libraries and runtimes are required for this to function on Pi OS:
 
  - Python 3 and pip for Python 3
- - GStreamer and GStreamer python 3 bindings
- - The following python libraries: flask, flask-classful, flask-socketio, pygame, smbus
+ - GStreamer and GStreamer python 3 bindings (TODO, finish WebRTC implementation)
+ - The following python libraries: flask, flask-classful, flask-socketio, pysdl2, smbus
  - I2C interface enabled on the Raspberry Pi (see ~page 38 in Freenove's instructions)
  - For video streaming, see MJPEG streaming section below
  
@@ -28,7 +28,7 @@ To clone this repository and all necessary libraries, perform the following
 ```bash
 # - Follow instructions for enabling I2C bus on the Raspberry Pi
 sudo apt-get install -y python3 python3-pip i2c-tools python3-gst-1.0 gstreamer1.0-omx-rpi-config libgstrtspserver-1.0-dev python3-sdl2
-pip3 install flask flask-classful flask-socketio approxeng.input smbus websockets
+pip3 install flask flask-classful flask-socketio smbus websockets
 sudo mkdir /opt/robot-remote
 sudo chown -R pi:pi /opt/robot-remote
 cd /opt
@@ -104,7 +104,7 @@ structure, and running the application with the argument " --conf=</path/to/conf
 
 ## Running
 
-If you just want to run the program, run the following, adjusting the
+If you just want to run the program, perform the following, adjusting the
 path of the configuration file and program folder as necessary
 
 ```bash
@@ -112,7 +112,7 @@ python3 /path/to/robot-remote/main.py --conf=/path/to/robot-remote/config.json
 # OR
 cd /path/to/robot-remote
 cd ..
-python -m robot-remote --conf=/path/to/robot-remote/config.json
+python3 -m robot-remote --conf=/path/to/robot-remote/config.json
 ```
 
 ## Installing as a startup service
