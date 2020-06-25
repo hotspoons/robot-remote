@@ -37,19 +37,89 @@ git clone https://github.com/hotspoons/robot-remote.git robot-remote
 
 ## Configuration
 
-Currently, configuration is set by modifying values in control/config.py.
-I will add the option to create an external configuration file soon.
+Configuration is set by providing a valid JSON file with the following 
+structure, and running the application with the argument " --conf=</path/to/configfile.json>":
 
-If you only want to hook up a gamepad (hopefully wireless) to your robot
-and drive it around, change the value of Config.mode from "Mode.SERVER"
-to "Mode.LOCAL". 
+```JavaScript
 
-You may need to update AXIS_MAP and ACTIONS_MAP to correspond to the correct
-axes and actions on your controller.
+{
+	 // The MJPEG URL to embed from your robot, null if none. Hostname 
+	 // auto-resolves to the name of the server
+	 
+    "mjpeg_url": "http://{hostname}:8090/?action=stream",
+    
+    // Future use :)
+    
+    "h264_url": null,
+    
+    // SERVER or LOCAL. Server exposes a web UI that can remote control 
+    // your robot through a web browser by accessing it's IP address
+    // and the port listed below, using the gamepad API in the browser. 
+    // Local allows you to remote control the robot with any gamepad SDL 
+    // can read, wireless hopefully :)
+    
+    "mode": "SERVER",
+    
+    // Binding address for server, or "0.0.0.0" for all 
+    
+    "address": "0.0.0.0",
+    
+    // The port that the server runs on for HTTP service, REST, and WebSockets
+    
+    "port": 9090,
+    
+    // How often in seconds that the controller state, either over 
+    // WebSockets/REST or locally, is polled for its state.
+    
+    "sampling_frequency": 0.06,
+    
+    // How long since the last update from an HTTP client to consider
+    // the connection lost, so the robot stops in place instead of heading
+    // on its current trajectory
+    
+    "server_state_update_timeout": 1.0,
+    
+    // SDL or web gamepad axis mapping to tuples that represent 
+    // vectors for the robot to move or look
+    
+    "AXIS_MAP": {
+        "0": ["LEFT", "RIGHT"],
+        "1": ["FORWARD", "REVERSE"],
+        "2": ["LOOK_LEFT", "LOOK_RIGHT"],
+        "3": ["LOOK_UP", "LOOK_DOWN"]
+    },
+    
+    // SDL or web gamepad button mapping to the various 
+    // logic outputs the Freenove robot has
+    
+    "ACTIONS_MAP":{
+        "0":"G_TOGGLE",
+        "1":"R_TOGGLE",
+        "3":"B_TOGGLE",
+        "4":"BEEP"
+    }
+}
+
+```
+
+## Running
+
+If you just want to run the program, run the following, adjusting the
+path of the configuration file and program folder as necessary
+
+```bash
+python3 /path/to/robot-remote/main.py --conf=/path/to/robot-remote/config.json
+# OR
+cd /path/to/robot-remote
+cd ..
+python -m robot-remote --conf=/path/to/robot-remote/config.json
+```
 
 ## Installing as a startup service
 
-To install this as systemd service, perform the following:
+To install this as systemd service, perform the following, adjusting
+paths as necessary. Also note the location of the config file; change this
+if you want to use another location:
 
 ```bash
 sudo su
@@ -59,7 +129,7 @@ echo "Description=Robot Remote" >> /lib/systemd/system/robot-remote.service
 echo "After=network-online.target" >> /lib/systemd/system/robot-remote.service
 echo ""  >> /lib/systemd/system/robot-remote.service
 echo "[Service]" >> /lib/systemd/system/robot-remote.service
-echo "ExecStart=/usr/bin/python3 /opt/robot-remote/main.py" >> /lib/systemd/system/robot-remote.service
+echo "ExecStart=/usr/bin/python3 /opt/robot-remote/main.py --conf=/opt/robot-remote/config.json" >> /lib/systemd/system/robot-remote.service
 echo "WorkingDirectory=/opt/robot-remote/" >> /lib/systemd/system/robot-remote.service
 echo "StandardOutput=inherit" >> /lib/systemd/system/robot-remote.service
 echo "StandardError=inherit" >> /lib/systemd/system/robot-remote.service
@@ -113,8 +183,11 @@ sudo systemctl start robot-server.service
 ```
 
 ## TODOs
- - Externalize configuration
+ - ~~Externalize configuration~~
+   - Done, see config.json for an example
  - Possibly integrated h264 streaming if I can figure out hardware acceleration
+   - Researching using WebRTC for transport, it involves a lot of setup and requires SSL either being correctly setup with a local CA installed on your LAN's workstation and correctly signed certificates, or adding exceptions. It is definitely possible though, I will continue to research
  - Configurable input on the web client
- - Finish writing python client 
+ - ~~Finish writing python client~~
+   - I think I am going to abandon this since the Web UI works just fine, and I don't see much of a use case for this
  - Better packaging of application (this was my first time writing more than a couple of lines of Python in 10 years, so I am a little rusty and behind the times)

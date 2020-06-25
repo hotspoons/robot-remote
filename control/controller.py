@@ -2,7 +2,6 @@ from .input import Input
 from .config import Config, Actions, Vectors, Mode
 from .robot import Robot
 from .server import Server
-from .client import Client
 import sys
 import getopt
 import time
@@ -40,20 +39,13 @@ class Controller:
         if mode != None:
             self.config.mode = mode
             
-        print("Config File = {}".format(self.config_file))
-        if self.config.mode == Mode.CLIENT:
-            self.init_client()
-        elif self.config.mode == Mode.SERVER:
+        if self.config.mode == Mode.SERVER:
             self.init_server()
         elif self.config.mode == Mode.LOCAL:
             self.init_local()
 
     def init_input(self):
         self.inputs = Input(self.config)
-
-    def init_client(self):
-        self.init_input()
-        self.client = Client(self.config)
         
     def init_server(self):
         self.init_output()
@@ -74,7 +66,7 @@ class Controller:
     """ Retrieve state, either from the server or our control surface """
 
     def get_state(self):
-        if self.config.mode == Mode.CLIENT or self.config.mode == Mode.LOCAL:
+        if self.config.mode == Mode.LOCAL:
             return self.inputs.get_state()
         else:
             return self.server.get_state()
@@ -90,10 +82,7 @@ class Controller:
     """ Emit the state, either to the robot or to the server """
 
     def emit_state(self, state):
-        if self.config.mode == Mode.CLIENT:
-            self.client.send_state(state)
-        else:
-            self.write_state(state)
+        self.write_state(state)
     
     """ If we are in local or client mode, we get the state from
         the control surface; if we are in server mode, we get the

@@ -118,11 +118,8 @@ class Config:
                 # Since JSON doesn't support numeric keys, convert types here
                 if type(getattr(self, key)) is dict and type(dictionary[key]) is dict:
                     target_dict = getattr(self, key)
-                    print("before {}".format(target_dict))
                     for dict_key in dictionary[key]:
-                        
                         target_dict[int(dict_key)] = dictionary[key][dict_key]
-                    print("after {}".format(target_dict))
                 else:
                     setattr(self, key, dictionary[key])
     

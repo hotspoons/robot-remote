@@ -63,8 +63,7 @@ class Server(Flask):
         if self.last_timestamp != None:
             if time.time() - self.last_timestamp > self._config.server_state_update_timeout:
                 if self.connected == True:
-                    print("It has been more than {} seconds since our last update from the client," + 
-                          " returning to ground state".format(self._config.server_state_update_timeout))
+                    print("It has been more than {} seconds since our last update from the client, returning to ground state".format(self._config.server_state_update_timeout))
                     self.connected = False
                 return self._config.get_base_state()
         self.connected = True
