@@ -1,4 +1,4 @@
-# Robot Remote 
+inputs# Robot Remote 
 
 A simple python-based remote control for a Freenove 3-wheel "smart car" 
 that can control the car locally (e.g. wireless gamepad connected to the 
@@ -16,6 +16,7 @@ there is nothing preventing it from running on other OSes or hardware. The
 following libraries and runtimes are required for this to function on Pi OS:
 
  - Python 3 and pip for Python 3
+ - GStreamer and GStreamer python 3 bindings
  - The following python libraries: flask, flask-classful, flask-socketio, pygame, smbus
  - I2C interface enabled on the Raspberry Pi (see ~page 38 in Freenove's instructions)
  - For video streaming, see MJPEG streaming section below
@@ -26,8 +27,8 @@ To clone this repository and all necessary libraries, perform the following
 
 ```bash
 # - Follow instructions for enabling I2C bus on the Raspberry Pi
-sudo apt-get install -y python3 python3-pip i2c-tools
-pip3 install flask flask-classful flask-socketio pygame smbus
+sudo apt-get install -y python3 python3-pip i2c-tools python3-gst-1.0 gstreamer1.0-omx-rpi-config libgstrtspserver-1.0-dev python3-sdl2
+pip3 install flask flask-classful flask-socketio approxeng.input smbus websockets
 sudo mkdir /opt/robot-remote
 sudo chown -R pi:pi /opt/robot-remote
 cd /opt

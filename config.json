@@ -1,0 +1,21 @@
+{
+    "mjpeg_url": "http://{hostname}:8090/?action=stream",
+    "h264_url": null,
+    "mode": "SERVER",
+    "address": "0.0.0.0",
+    "port": 9090,
+    "sampling_frequency": 0.06,
+    "server_state_update_timeout": 1.0,
+    "AXIS_MAP": {
+        "0": ["LEFT", "RIGHT"],
+        "1": ["FORWARD", "REVERSE"],
+        "2": ["LOOK_LEFT", "LOOK_RIGHT"],
+        "3": ["LOOK_UP", "LOOK_DOWN"]
+    },
+    "ACTIONS_MAP":{
+        "0":"G_TOGGLE",
+        "1":"R_TOGGLE",
+        "3":"B_TOGGLE",
+        "4":"BEEP"
+    }
+}

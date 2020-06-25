@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 from flask_socketio import SocketIO, emit
 from flask_classful import FlaskView, route
+import time
 
 class Server(Flask):
     _config = None
     state = None
     socketio = None
+    last_timestamp = None
+    connected = False
     
     def __init__(self, config):
         super().__init__(__name__)
@@ -34,6 +37,8 @@ class Server(Flask):
     
     """ Controller that accepts a "State" structure"""
     def put_state(self, json=None):
+        self.last_timestamp = time.time()
+        self.connected = True
         emit_event = False
         if json == None:
             new_state = request.get_json()
@@ -55,4 +60,12 @@ class Server(Flask):
 
 
     def get_state(self):
+        if self.last_timestamp != None:
+            if time.time() - self.last_timestamp > self._config.server_state_update_timeout:
+                if self.connected == True:
+                    print("It has been more than {} seconds since our last update from the client," + 
+                          " returning to ground state".format(self._config.server_state_update_timeout))
+                    self.connected = False
+                return self._config.get_base_state()
+        self.connected = True
         return self.state

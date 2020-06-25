@@ -7,9 +7,11 @@ import sys
 import getopt
 import time
 import threading
+import json
+
 
 class Controller:
-    controller_index = None
+    config_file = None
     inputs = None
     config = None
     server = None
@@ -17,23 +19,28 @@ class Controller:
     robot = None
     
     def __init__(self, config=None):
-        opts, args = getopt.getopt(sys.argv[1:],"h",["controller="])
+        mode = None
+        opts, args = getopt.getopt(sys.argv[1:], "h", ["conf="])
         for opt, arg in opts:
-             if opt == '-h':
-                print ('remote --controller=<index of controller, e.g. 1>')
+            if opt == '-h':
+                print ('remote --conf=</path/to/config.json>')
                 sys.exit()
-             elif opt in ("--controller"):
-                self.controller_index = arg
-        # TODO read from file
+            elif opt in ("--conf"):
+                self.config_file = arg
+            elif opt in ("--mode"):
+                mode = Mode[opt]
         if config == None:
             self.config = Config()
+            if self.config_file != None:
+                with open(self.config_file, 'r') as file:
+                    self.config.map_values(json.load(file))
         else:
             self.config = config
+        
+        if mode != None:
+            self.config.mode = mode
             
-        if self.controller_index == None:
-            self.controller_index = self.config.controller_index
-            
-        print("Controller = {}".format(self.controller_index))
+        print("Config File = {}".format(self.config_file))
         if self.config.mode == Mode.CLIENT:
             self.init_client()
         elif self.config.mode == Mode.SERVER:
@@ -42,10 +49,7 @@ class Controller:
             self.init_local()
 
     def init_input(self):
-        #try:
-        self.inputs = Input(self.config, self.controller_index)
-        #except:
-        #    print("later, sleep for 1 second, try to connect input again")
+        self.inputs = Input(self.config)
 
     def init_client(self):
         self.init_input()
@@ -68,6 +72,7 @@ class Controller:
     """
     
     """ Retrieve state, either from the server or our control surface """
+
     def get_state(self):
         if self.config.mode == Mode.CLIENT or self.config.mode == Mode.LOCAL:
             return self.inputs.get_state()
@@ -75,6 +80,7 @@ class Controller:
             return self.server.get_state()
     
     """ Write thet state to the robot """
+
     def write_state(self, state):
             self.robot.set_action_state(state)
             self.robot.set_motion(state)
@@ -82,6 +88,7 @@ class Controller:
             self.robot.set_pan_tilt(state)
     
     """ Emit the state, either to the robot or to the server """
+
     def emit_state(self, state):
         if self.config.mode == Mode.CLIENT:
             self.client.send_state(state)
@@ -93,12 +100,11 @@ class Controller:
         state from the REST server. If we are in client mode, we
         send the state to the server. If we are in local or server
         mode, we write the state to the robot """
+
     def start(self):
-        print("starting...")
+        print("starting in {} mode...".format(self.config.mode))
         while True:
             state = self.get_state()
             self.emit_state(state)
             time.sleep(self.config.sampling_frequency)
-            
-
                 

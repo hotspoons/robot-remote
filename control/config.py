@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 import copy
 
 class Vectors(str, Enum):
@@ -58,18 +58,13 @@ class Config:
     
     h264_url = None
     
-    """ If you have multiple controllers configured, this is the index
-        of the one you wish to use for client or local usage"""
-        
-    controller_index = 0
-    
     """ The mode in which is runs. LOCAL reads directly from a configured
         controller and sends events directly to the robot. CLIENT reads
         events from the configured controller and sends it to the server.
         SERVER reads state in the format of the State class above and 
         sends them to the robot, either over REST or WebSockets"""
         
-    mode = Mode.SERVER
+    mode = Mode.LOCAL
     
     """ The binding address for the server (e.g. 0.0.0.0 = all) in server
         mode, or the host name or IP address of the server"""
@@ -86,6 +81,13 @@ class Config:
         """
         
     sampling_frequency = 0.06
+    
+    """ When receiving state over REST or WebSocket, how long between
+    state updates from a client before we set the state to ground, to 
+    prevent our robot from driving endlessly in the same heading it 
+    was going"""
+    
+    server_state_update_timeout = 1.0
     
     """ This dictionary needs to be configured for your input controller
         
@@ -109,6 +111,20 @@ class Config:
         3:Actions.B_TOGGLE,
         4:Actions.BEEP,
     }
+    
+    def map_values(self, dictionary):
+        for key in dictionary:
+            if hasattr(self, key):
+                # Since JSON doesn't support numeric keys, convert types here
+                if type(getattr(self, key)) is dict and type(dictionary[key]) is dict:
+                    target_dict = getattr(self, key)
+                    print("before {}".format(target_dict))
+                    for dict_key in dictionary[key]:
+                        
+                        target_dict[int(dict_key)] = dictionary[key][dict_key]
+                    print("after {}".format(target_dict))
+                else:
+                    setattr(self, key, dictionary[key])
     
     def get_base_state(self):
         return copy.deepcopy(State().default_state)
