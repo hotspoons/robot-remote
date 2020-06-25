@@ -38,20 +38,28 @@ git clone https://github.com/hotspoons/robot-remote.git robot-remote
 ## Configuration
 
 Currently, configuration is set by modifying values in control/config.py.
-I will add the option to create an external configuration file soon...
+I will add the option to create an external configuration file soon.
+
+If you only want to hook up a gamepad (hopefully wireless) to your robot
+and drive it around, change the value of Config.mode from "Mode.SERVER"
+to "Mode.LOCAL". 
+
+You may need to update AXIS_MAP and ACTIONS_MAP to correspond to the correct
+axes and actions on your controller.
 
 ## Installing as a startup service
 
 To install this as systemd service, perform the following:
 
 ```bash
+sudo su
 echo "" > /lib/systemd/system/robot-remote.service
 echo "[Unit]" >> /lib/systemd/system/robot-remote.service
 echo "Description=Robot Remote" >> /lib/systemd/system/robot-remote.service
 echo "After=network-online.target" >> /lib/systemd/system/robot-remote.service
 echo ""  >> /lib/systemd/system/robot-remote.service
 echo "[Service]" >> /lib/systemd/system/robot-remote.service
-echo "ExecStart=/usr/bin/python3 /opt/robot-remote/robot-server.sh" >> /lib/systemd/system/robot-remote.service
+echo "ExecStart=/usr/bin/python3 /opt/robot-remote/main.py" >> /lib/systemd/system/robot-remote.service
 echo "WorkingDirectory=/opt/robot-remote/" >> /lib/systemd/system/robot-remote.service
 echo "StandardOutput=inherit" >> /lib/systemd/system/robot-remote.service
 echo "StandardError=inherit" >> /lib/systemd/system/robot-remote.service
@@ -103,3 +111,10 @@ sudo systemctl enable robot-server.service
 sudo systemctl start robot-server.service
 
 ```
+
+## TODOs
+ - Externalize configuration
+ - Possibly integrated h264 streaming if I can figure out hardware acceleration
+ - Configurable input on the web client
+ - Finish writing python client 
+ - Better packaging of application (this was my first time writing more than a couple of lines of Python in 10 years, so I am a little rusty and behind the times)
