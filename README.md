@@ -1,4 +1,4 @@
-inputs# Robot Remote 
+# Robot Remote 
 
 A simple python-based remote control for a Freenove 3-wheel "smart car" 
 that can control the car locally (e.g. wireless gamepad connected to the 
